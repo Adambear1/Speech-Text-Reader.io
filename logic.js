@@ -1,9 +1,9 @@
-const main = document.querySelector('#main');
-const voicesSelect = document.querySelector('#voices')
-const textarea = document.querySelector('#text')
-const readBtn = document.querySelector('#read')
-const toggleBtn = document.querySelector('#toggle')
-const closeBtn = document.querySelector('#close')
+const main = document.querySelector('main');
+const voicesSelect = document.getElementById('voices');
+const textarea = document.getElementById('text');
+const readBtn = document.getElementById('read');
+const toggleBtn = document.getElementById('toggle');
+const closeBtn = document.getElementById('close');
 
 const data = [
     {
@@ -58,82 +58,85 @@ const data = [
 
 data.forEach(createBox);
 
-//Store voices
-let voices = []
-
-function getVoices() {
-    voices = speechSynthesis.getVoices();
-    voices.forEach(voice => {
-        const option = document.createElement('option');
-        option.value = voice.name;
-        option.innerText = `${voice.name} ${voice.lang}`;
-
-        voicesSelect.appendChild(option)
-    })
-};
-
-speechSynthesis.addEventListener('voiceschanged', getVoices);
-
-//SetVoice
-function setVoice(e) {
-    message.voice = voices.find(voice => voice.name === e.target.value)
-}
-
-
-
-
-
-
-//Create speech boxes
+// Create speech boxes
 function createBox(item) {
     const box = document.createElement('div');
 
     const { image, text } = item;
 
     box.classList.add('box');
+
     box.innerHTML = `
-    <img scr="${image} alt=${text}/>
-    <p class='info'>${text}</p>`;
+    <img src="${image}" alt="${text}" />
+    <p class="info">${text}</p>
+  `;
 
     box.addEventListener('click', () => {
         setTextMessage(text);
         speakText();
 
-        //Add active effect
+        // Add active effect
         box.classList.add('active');
-        setTimeout(() => box.classList.remove('active'), 800)
-    })
-    main.appendChild(box)
-}
+        setTimeout(() => box.classList.remove('active'), 800);
+    });
 
-//Set text
-function setTextMessage(text) {
-    message.text = text;
-}
-
-function speakText() {
-    speechSynthesis.speak(message)
+    main.appendChild(box);
 }
 
 // Init speech synth
 const message = new SpeechSynthesisUtterance();
 
-//Toggle text box
+// Store voices
+let voices = [];
+
+function getVoices() {
+    voices = speechSynthesis.getVoices();
+
+    voices.forEach(voice => {
+        const option = document.createElement('option');
+
+        option.value = voice.name;
+        option.innerText = `${voice.name} ${voice.lang}`;
+
+        voicesSelect.appendChild(option);
+    });
+}
+
+// Set text
+function setTextMessage(text) {
+    message.text = text;
+}
+
+// Speak text
+function speakText() {
+    speechSynthesis.speak(message);
+}
+
+// Set voice
+function setVoice(e) {
+    message.voice = voices.find(voice => voice.name === e.target.value);
+}
+
+// Voices changed
+speechSynthesis.addEventListener('voiceschanged', getVoices);
+
+// Toggle text box
 toggleBtn.addEventListener('click', () =>
-    document.getElementById('text-box').classList.toggle('show'))
+    document.getElementById('text-box').classList.toggle('show')
+);
 
-//Close button
+// Close button
 closeBtn.addEventListener('click', () =>
-    document.getElementById('text-box').classList.remove('show'))
+    document.getElementById('text-box').classList.remove('show')
+);
 
+// Change voice
+voicesSelect.addEventListener('change', setVoice);
 
-//Change voice
-voicesSelect.addEventListener('change', setVoice)
-
-//Read text button
+// Read text button
 readBtn.addEventListener('click', () => {
     setTextMessage(textarea.value);
     speakText();
-})
+});
 
-getVoices()
+getVoices();
